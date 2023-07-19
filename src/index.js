@@ -12,17 +12,28 @@ const def = {
 const reducer = (state = def, action) => {
   switch (action.type) {
     case "ADD_TODO": {
-      const  item  = action.payload;
+      const item = action.payload;
       return {
         ...state,
         todo: [...state.todo, item],
       };
     }
     case "DELETE_TODO": {
-      const  item  = action.payload;
+      const item = action.payload;
       return {
         ...state,
-        todo: [state.todo.filter((el) => el != item)],
+        todo: state.todo.filter((el) => el.content !== item),
+      };
+    }
+    case "TOGGLE_TODO": {
+      const id = action.payload;
+      const item = state.todo.find((el) => el.id === id);
+      const newTodo = { ...item, isFiltred: !item.isFiltred };
+      const newTodos = state.todo.map(el => el.id === id ? newTodo : el)
+
+      return {
+        ...state,
+        todo: newTodos
       };
     }
     default:
@@ -31,7 +42,7 @@ const reducer = (state = def, action) => {
 };
 
 const store = configureStore({
-    reducer: reducer
+  reducer: reducer,
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -40,5 +51,5 @@ root.render(
     <Provider store={store}>
       <App />
     </Provider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );
